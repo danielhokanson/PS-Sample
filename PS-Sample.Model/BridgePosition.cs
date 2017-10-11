@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace PS_Sample.Model
 {
-    public interface IPosition
+    public class BridgePosition
     {
+        public Bridge Bridge { get; set; }
     }
 }

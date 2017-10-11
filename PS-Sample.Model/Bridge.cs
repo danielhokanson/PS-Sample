@@ -8,9 +8,9 @@ namespace PS_Sample.Model
 {
     public abstract class Bridge
     {
-        public HashSet<Animal> LeftSideAnimalList { get; protected set; } = new HashSet<Animal>();
-        public HashSet<Animal> RightSideAnimalList { get; protected set; } = new HashSet<Animal>();
-        public abstract IPosition[] BridgePositionList { get; protected set; }
+        public List<Animal> LeftSideAnimalList { get; protected set; } = new List<Animal>();
+        public List<Animal> RightSideAnimalList { get; protected set; } = new List<Animal>();
+        public abstract BridgePosition[] BridgePositionList { get; protected set; }
         public abstract Int16 Capacity { get; internal set; }
         public void AddAnimal(BridgeSide p_side, Animal p_animalToAdd)
         {

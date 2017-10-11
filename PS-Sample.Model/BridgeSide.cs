@@ -8,7 +8,8 @@ namespace PS_Sample.Model
 {
     public enum BridgeSide
     {
-        Right,
-        Left
+        Unspecified = 0,
+        Right = 1,
+        Left = 2
     }
 }
