@@ -10,8 +10,17 @@ namespace PS_Sample.Model
     {
         public List<Animal> LeftSideAnimalList { get; protected set; } = new List<Animal>();
         public List<Animal> RightSideAnimalList { get; protected set; } = new List<Animal>();
-        public abstract BridgePosition[] BridgePositionList { get; protected set; }
-        public abstract Int16 Capacity { get; internal set; }
+        public Animal[,] CrossingAnimals { get; internal set; }
+        public short PositionCount { get; private set; }
+        public short Capacity { get; private set; }
+        protected short LaneCount { get; private set; }
+        public Bridge(short p_bridgePositionCount, short p_bridgeCapactity, short p_bridgeLaneCount = 1)
+        {
+            this.PositionCount = p_bridgePositionCount;
+            this.Capacity = p_bridgeCapactity;
+            this.LaneCount = p_bridgeLaneCount;
+            this.CrossingAnimals = new Animal[this.Capacity, this.LaneCount];
+        }                                                                             
         public void AddAnimal(BridgeSide p_side, Animal p_animalToAdd)
         {
             if (p_side == BridgeSide.Left)

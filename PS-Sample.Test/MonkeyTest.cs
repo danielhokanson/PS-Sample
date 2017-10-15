@@ -9,11 +9,6 @@ namespace PS_Sample.Test
 {
     [TestClass]
     public class MonkeyTest
-    {
-        //Test Movement to Open Position
-
-        //Test Movement to Occupied Position
-
-        //Test Time allotment
+    {                        
     }
 }

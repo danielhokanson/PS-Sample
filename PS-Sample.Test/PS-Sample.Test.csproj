@@ -49,11 +49,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MonkeyTest.cs" />
-    <Compile Include="RopeBridgeTest.cs" />
+    <Compile Include="BridgeTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PS-Sample.Adapter\PS-Sample.Adapter.csproj">
+      <Project>{dad812eb-c706-4904-9078-d2f1f30c9629}</Project>
+      <Name>PS-Sample.Adapter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\PS-Sample.Model\PS-Sample.Model.csproj">
+      <Project>{abc4d1e6-789f-4fcb-81ac-742b89f4af61}</Project>
+      <Name>PS-Sample.Model</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

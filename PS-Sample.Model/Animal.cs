@@ -64,7 +64,7 @@ namespace PS_Sample.Model
 
         public virtual void TryMove()
         {
-            if()
+            
         }
     }
 }
