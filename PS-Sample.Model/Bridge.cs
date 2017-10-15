@@ -10,10 +10,11 @@ namespace PS_Sample.Model
     {
         public List<Animal> LeftSideAnimalList { get; protected set; } = new List<Animal>();
         public List<Animal> RightSideAnimalList { get; protected set; } = new List<Animal>();
-        public Animal[,] CrossingAnimals { get; internal set; }
+        public Animal[][] CrossingAnimals { get; private set; }
+        public short CrossingAnimalCount { get; private set; }
         public short PositionCount { get; private set; }
         public short Capacity { get; private set; }
-        protected short LaneCount { get; private set; }
+        public short LaneCount { get; private set; }
         public Bridge(short p_bridgePositionCount, short p_bridgeCapacity, short p_bridgeLaneCount = 1)
         {
             if (p_bridgePositionCount < 1)
@@ -31,8 +32,12 @@ namespace PS_Sample.Model
             this.PositionCount = p_bridgePositionCount;
             this.Capacity = p_bridgeCapacity;
             this.LaneCount = p_bridgeLaneCount;
-            this.CrossingAnimals = new Animal[this.PositionCount, this.LaneCount];
-        }                                                                             
+            this.CrossingAnimals = new Animal[this.LaneCount][];
+            for (var laneIndex = 0; laneIndex < this.LaneCount; laneIndex++)
+            {
+
+            }
+        }
         public void AddAnimal(BridgeSide p_side, Animal p_animalToAdd)
         {
             if (p_side == BridgeSide.Left)
@@ -43,6 +48,12 @@ namespace PS_Sample.Model
             {
                 RightSideAnimalList.Add(p_animalToAdd);
             }
+        }
+
+
+        public Animal[] AddAnimalToBridgeCrossing(Animal p_animal, short p_lane)
+        {
+            throw new NotImplementedException();
         }
     }
 }

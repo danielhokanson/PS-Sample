@@ -3,10 +3,16 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PS_Sample.Model;
 
 namespace PS_Sample.Test
-{
-    [TestClass]
-    public class BridgeTest
+{                   
+    public abstract class BridgeTest
     {   
+        public Bridge Bridge { get; internal set; }
+
+        public BridgeTest(Bridge p_bridge)
+        {
+            this.Bridge = p_bridge;
+        }
+
        [TestMethod]
        public void TestHasBridgeCapacity()
         {

@@ -10,10 +10,12 @@ namespace PS_Sample.Model
     {
         public static int NextAnimalId = 0;
         public static List<string> AnimalConsole { get; private set; } = new List<string>();
-        public int AnimalId { get; private set; }
+        public int Id { get; private set; }
         public short MovementLimit { get; private set; }
         public DateTime? FirstInLineStamp { get; private set; }
-        public virtual Animal Predecessor
+        private BridgeSide _side;
+        public BridgeSide Side { get; private set; }
+        public virtual Animal QueuePredecessor
         {
             get
             {
@@ -35,6 +37,17 @@ namespace PS_Sample.Model
                 return Queue.IndexOf(this);
             }
         }
+        public Animal BridgePredecessor
+        {
+            get
+            {
+                if(Bridge == null || Lane == null || Array.IndexOf(Lane,this) < 0)
+                {   
+                    return null;
+                }
+                return Lane[Array.IndexOf(Lane, this) - 1];
+            }
+        }
         public short? BridgePosition
         {
             get
@@ -42,14 +55,15 @@ namespace PS_Sample.Model
                 if (Bridge == null || Bridge.CrossingAnimals == null) {
                     return null;
                 }
-                for(var laneIndex = 0; laneIndex < Bridge.CrossingAnimals.Length; laneIndex++)
-                {
-                    
+                for(var laneIndex = 0; laneIndex < Bridge.LaneCount; laneIndex++)
+                {                                              
+                    var lane = Bridge.CrossingAnimals[laneIndex];
                 }
                 return null;
             }
         }
-        internal List<Animal> Queue { get; set; }
+        internal List<Animal> Queue { get; private set; }
+        internal Animal[] Lane { get; private set; }
         internal Bridge Bridge { get; set; }
         public Animal(Bridge p_bridge, BridgeSide p_side, short p_animalMovementLimit = 1)
         {
@@ -67,18 +81,19 @@ namespace PS_Sample.Model
             {
                 throw new InvalidOperationException("An animal cannot be initialized without specifying qhich side oif the bridge it is on.");
             }
-            this.AnimalId = NextAnimalId++;
+            this.Side = p_side;
+            this.Id = NextAnimalId++;
         }
 
-        public virtual void TryMove()
+        public void TryMove()
         {
             if (LinePosition == 0)
             {
-
+                
             }
             else
             {
-                AnimalConsole.Insert(0, $"Animal:{this.GetType().Name}");
+                AnimalConsole.Insert(0, $"Animal({this.Id}):{this.GetType().Name}: has to wait. It is not at the front of the line.");
             }
         }
     }
