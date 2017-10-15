@@ -51,6 +51,7 @@
     <Compile Include="BridgeTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RopeBridgeTest.cs" />
+    <Compile Include="DoubleRopBridgeTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

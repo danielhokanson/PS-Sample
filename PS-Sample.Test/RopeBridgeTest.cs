@@ -6,12 +6,8 @@ using PS_Sample.Adapter;
 namespace PS_Sample.Test
 {
     [TestClass]
-    public class RopeBridgeTest  : BridgeTest
-    {                                         
-        public RopeBridgeTest() : base(new RopeBridge())
-        {
-            
-        }
+    public class RopeBridgeTest  : BridgeTest<RopeBridge>
+    {    
         [TestMethod]
         public void RopeBridgeLaneCountTest()
         {

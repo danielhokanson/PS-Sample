@@ -4,13 +4,14 @@ using PS_Sample.Model;
 
 namespace PS_Sample.Test
 {                   
-    public abstract class BridgeTest
+    public abstract class BridgeTest<TBridge>
+        where TBridge : Bridge, new()
     {   
-        public Bridge Bridge { get; internal set; }
+        public TBridge Bridge { get; internal set; }
 
-        public BridgeTest(Bridge p_bridge)
+        public BridgeTest()
         {
-            this.Bridge = p_bridge;
+            this.Bridge = new TBridge();
         }
 
        [TestMethod]
@@ -25,6 +26,12 @@ namespace PS_Sample.Test
         {
             var bridgePositionCountProp = typeof(Bridge).GetProperty("PositionCount");
             Assert.IsTrue(bridgePositionCountProp != null && bridgePositionCountProp.PropertyType == typeof(short));
-        }  
+        }
+
+        [TestMethod]
+        public void BridgeFullMoveTest()
+        {
+
+        }
     }
 }
