@@ -14,7 +14,6 @@ namespace PS_Sample.Model
         public string AvatarRelativePath { get; set; }
         public short MovementLimit { get; private set; }
         public DateTime? FirstInLineStamp { get; private set; }
-        private BridgeSide _side;
         public BridgeSide Side { get; private set; }
         public virtual Animal QueuePredecessor
         {
