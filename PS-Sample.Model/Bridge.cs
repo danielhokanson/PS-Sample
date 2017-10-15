@@ -14,12 +14,24 @@ namespace PS_Sample.Model
         public short PositionCount { get; private set; }
         public short Capacity { get; private set; }
         protected short LaneCount { get; private set; }
-        public Bridge(short p_bridgePositionCount, short p_bridgeCapactity, short p_bridgeLaneCount = 1)
+        public Bridge(short p_bridgePositionCount, short p_bridgeCapacity, short p_bridgeLaneCount = 1)
         {
+            if (p_bridgePositionCount < 1)
+            {
+                throw new InvalidOperationException("The Bridge Position Count parameter(p_bridgePositionCount) provided to the Bridge cannot be less than one.");
+            }
+            if (p_bridgeCapacity < 1)
+            {
+                throw new InvalidOperationException("The Bridge Capacity parameter(p_bridgeCapacity) value provided to the Bridge cannot be less than one.");
+            }
+            if (p_bridgeLaneCount < 1)
+            {
+                throw new InvalidOperationException("The Bridge Lane Count parameter(p_bridgeLaneCount) provided to the Bridge cannot be less than one.");
+            }
             this.PositionCount = p_bridgePositionCount;
-            this.Capacity = p_bridgeCapactity;
+            this.Capacity = p_bridgeCapacity;
             this.LaneCount = p_bridgeLaneCount;
-            this.CrossingAnimals = new Animal[this.Capacity, this.LaneCount];
+            this.CrossingAnimals = new Animal[this.PositionCount, this.LaneCount];
         }                                                                             
         public void AddAnimal(BridgeSide p_side, Animal p_animalToAdd)
         {

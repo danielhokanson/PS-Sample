@@ -8,63 +8,78 @@ namespace PS_Sample.Model
 {
     public abstract class Animal
     {
-        public abstract int MovementLimit { get; internal set; }
-        public virtual DateTime? FirstInLineStamp { get; set; }
-        public virtual BridgeSide Side { get; set; }
-        public virtual Animal Predecessor { get {
-                if (_bridge == null || _sideList == null || _sideList.IndexOf(this) < 1)
-                {
-                    return null;
-                }
-                return _sideList[_sideList.IndexOf(this) - 1];
-            } }
-        public int LinePosition
+        public static int NextAnimalId = 0;
+        public static List<string> AnimalConsole { get; private set; } = new List<string>();
+        public int AnimalId { get; private set; }
+        public short MovementLimit { get; private set; }
+        public DateTime? FirstInLineStamp { get; private set; }
+        public virtual Animal Predecessor
         {
             get
             {
-                if(_sideList == null)
+                if (Bridge == null || Queue == null || Queue.IndexOf(this) < 1)
                 {
-                    return -1;
+                    return null;
                 }
-                return _sideList.IndexOf(this);
+                return Queue[Queue.IndexOf(this) - 1];
             }
         }
-        protected List<Animal> _sideList;
-        protected Bridge _bridge;
-    }
-    public abstract class Animal<TBridge> : Animal
-        where TBridge : Bridge, new()
-    {   
-        
-        public virtual TBridge Bridge { get { return _bridge as TBridge; } set { _bridge = value; } }
-        
-
-        public Animal(TBridge p_bridge, BridgeSide p_side)
+        public int? LinePosition
         {
-            Bridge = p_bridge;
-            Side = p_side;
-            InitAnimal();
-        }
-
-        private void InitAnimal()
-        {
-            switch (Side)
+            get
             {
-                case BridgeSide.Unspecified:
-                    throw new InvalidOperationException($"Animal:{this.GetType().Name} Cannot be created without specifying the side of the bridge.");
-                case BridgeSide.Left:
-                    _sideList = Bridge.LeftSideAnimalList;
-                    break;
-                case BridgeSide.Right:
-                    _sideList = Bridge.RightSideAnimalList;
-                    break;
+                if (Bridge == null || Queue == null || Queue.IndexOf(this) < 0)
+                {
+                    return null;
+                }
+                return Queue.IndexOf(this);
             }
-            _sideList.Add(this);
+        }
+        public short? BridgePosition
+        {
+            get
+            {
+                if (Bridge == null || Bridge.CrossingAnimals == null) {
+                    return null;
+                }
+                for(var laneIndex = 0; laneIndex < Bridge.CrossingAnimals.Length; laneIndex++)
+                {
+                    
+                }
+                return null;
+            }
+        }
+        internal List<Animal> Queue { get; set; }
+        internal Bridge Bridge { get; set; }
+        public Animal(Bridge p_bridge, BridgeSide p_side, short p_animalMovementLimit = 1)
+        {
+            this.Bridge = p_bridge;
+            if (p_side == BridgeSide.Left)
+            {
+                this.Queue = this.Bridge.LeftSideAnimalList;
+
+            }
+            else if (p_side == BridgeSide.Right)
+            {
+                this.Queue = this.Bridge.RightSideAnimalList;
+            }
+            else
+            {
+                throw new InvalidOperationException("An animal cannot be initialized without specifying qhich side oif the bridge it is on.");
+            }
+            this.AnimalId = NextAnimalId++;
         }
 
         public virtual void TryMove()
         {
-            
+            if (LinePosition == 0)
+            {
+
+            }
+            else
+            {
+                AnimalConsole.Insert(0, $"Animal:{this.GetType().Name}");
+            }
         }
     }
 }

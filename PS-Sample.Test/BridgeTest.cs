@@ -10,8 +10,15 @@ namespace PS_Sample.Test
        [TestMethod]
        public void TestHasBridgeCapacity()
         {
-            var bridgeCapacityProp = typeof(Bridge).GetProperty("Capactity");
-            Assert.IsTrue(bridgeCapacityProp != null && bridgeCapacityProp.GetType() == typeof(short));
+            var bridgeCapacityProp = typeof(Bridge).GetProperty("Capacity");
+            Assert.IsTrue(bridgeCapacityProp != null && bridgeCapacityProp.PropertyType == typeof(short));
         }
+
+        [TestMethod]
+        public void TestHasBridgePositionCount()
+        {
+            var bridgePositionCountProp = typeof(Bridge).GetProperty("PositionCount");
+            Assert.IsTrue(bridgePositionCountProp != null && bridgePositionCountProp.PropertyType == typeof(short));
+        }  
     }
 }
