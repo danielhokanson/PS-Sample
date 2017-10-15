@@ -7,10 +7,11 @@ using System.Threading.Tasks;
 namespace PS_Sample.Model
 {
     public abstract class Animal
-    {
+    {   
         public static int NextAnimalId = 0;
         public static List<string> AnimalConsole { get; private set; } = new List<string>();
         public int Id { get; private set; }
+        public string AvatarRelativePath { get; set; }
         public short MovementLimit { get; private set; }
         public DateTime? FirstInLineStamp { get; private set; }
         private BridgeSide _side;
@@ -85,7 +86,7 @@ namespace PS_Sample.Model
             this.Id = NextAnimalId++;
         }
 
-        public void TryMove()
+        public bool TryMove()
         {
             if (LinePosition == 0)
             {
@@ -95,6 +96,7 @@ namespace PS_Sample.Model
             {
                 AnimalConsole.Insert(0, $"Animal({this.Id}):{this.GetType().Name}: has to wait. It is not at the front of the line.");
             }
+            return false;
         }
     }
 }

@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DoubleRopeBridge.cs" />
+    <Compile Include="Monkey.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RopeBridge.cs" />
   </ItemGroup>
@@ -49,6 +50,12 @@
       <Project>{abc4d1e6-789f-4fcb-81ac-742b89f4af61}</Project>
       <Name>PS-Sample.Model</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="resource\monkey.svg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

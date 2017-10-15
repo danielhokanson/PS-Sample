@@ -35,25 +35,9 @@ namespace PS_Sample.Model
             this.CrossingAnimals = new Animal[this.LaneCount][];
             for (var laneIndex = 0; laneIndex < this.LaneCount; laneIndex++)
             {
-
-            }
-        }
-        public void AddAnimal(BridgeSide p_side, Animal p_animalToAdd)
-        {
-            if (p_side == BridgeSide.Left)
-            {
-                LeftSideAnimalList.Add(p_animalToAdd);
-            }
-            else
-            {
-                RightSideAnimalList.Add(p_animalToAdd);
+                this.CrossingAnimals[laneIndex] = new Animal[this.PositionCount];
             }
         }
 
-
-        public Animal[] AddAnimalToBridgeCrossing(Animal p_animal, short p_lane)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
