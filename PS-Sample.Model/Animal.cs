@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace PS_Sample.Model
 {
     public abstract class Animal
-    {   
+    {
         public static int NextAnimalId = 0;
         public static List<string> AnimalConsole { get; private set; } = new List<string>();
         public int Id { get; private set; }
@@ -41,8 +41,8 @@ namespace PS_Sample.Model
         {
             get
             {
-                if(Bridge == null || Lane == null || Array.IndexOf(Lane,this) < 0)
-                {   
+                if (Bridge == null || Lane == null || Array.IndexOf(Lane, this) < 0)
+                {
                     return null;
                 }
                 return Lane[Array.IndexOf(Lane, this) - 1];
@@ -52,11 +52,12 @@ namespace PS_Sample.Model
         {
             get
             {
-                if (Bridge == null || Bridge.CrossingAnimals == null) {
+                if (Bridge == null || Bridge.CrossingAnimals == null)
+                {
                     return null;
                 }
-                for(var laneIndex = 0; laneIndex < Bridge.LaneCount; laneIndex++)
-                {                                              
+                for (var laneIndex = 0; laneIndex < Bridge.LaneCount; laneIndex++)
+                {
                     var lane = Bridge.CrossingAnimals[laneIndex];
                 }
                 return null;
@@ -88,13 +89,56 @@ namespace PS_Sample.Model
 
         public bool TryMove()
         {
-            if (LinePosition == 0)
+
+            if (!LinePosition.HasValue)
             {
-                
+                return MoveAnimalInBridgeLane();
+            }
+            else if (LinePosition == 0)
+            {
+                return MoveHeadofQueueAnimal();
             }
             else
             {
                 AnimalConsole.Insert(0, $"Animal({this.Id}):{this.GetType().Name}: has to wait. It is not at the front of the line.");
+                return false;
+            }
+            return false;
+        }
+
+        private bool MoveAnimalInBridgeLane()
+        {
+            if (Lane == null)
+            {
+                var error = $"Animal({this.Id}):{this.GetType().Name}: Something went wrong. This Animal is not in a Queue and is not currently in a bridge lane. Cannot move";
+                AnimalConsole.Insert(0, error);
+                throw new InvalidOperationException(error);
+            }
+            return false;
+        }
+
+        private bool MoveHeadofQueueAnimal()
+        {
+            if (Bridge.CrossingAnimalCount == Bridge.Capacity)
+            {
+                AnimalConsole.Insert(0, $"Animal({this.Id}):{this.GetType().Name}: has to wait. The bridge is at capacity.");
+                return false;
+            }
+            else
+            {
+                foreach (Animal[] lane in this.Bridge.CrossingAnimals)
+                {
+                    int laneOccupants = 0;
+                    BridgeSide currentOccupantSide = BridgeSide.Unspecified;
+                    foreach (Animal crossingAnimal in lane)
+                    {
+                        laneOccupants += (crossingAnimal != null) ? 1 : 0;
+                        if (currentOccupantSide == BridgeSide.Unspecified)
+                        {
+                            currentOccupantSide = crossingAnimal.Side;
+                        }
+                    }
+                }
             }
             return false;
         }
