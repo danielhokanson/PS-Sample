@@ -21,5 +21,20 @@ namespace PS_Sample.Test
             var animal = new Monkey(this.Bridge, BridgeSide.Right);
             Assert.IsTrue(this.Bridge.RightSideAnimalList.IndexOf(animal) > -1);
         }
+
+        [TestMethod]
+        public void TestUnimpededCrossing()
+        {
+            this.Bridge = new RopeBridge();
+            var animal = new Monkey(this.Bridge, BridgeSide.Left);
+
+            animal.TryMove();
+            animal.TryMove();
+            animal.TryMove();
+            animal.TryMove();
+            var shouldBeFalseValue = animal.TryMove();
+
+            Assert.IsTrue(!shouldBeFalseValue && animal.Side == BridgeSide.Unspecified);
+        }
     }
 }
