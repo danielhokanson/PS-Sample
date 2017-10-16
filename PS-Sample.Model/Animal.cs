@@ -82,6 +82,7 @@ namespace PS_Sample.Model
                 throw new InvalidOperationException("An animal cannot be initialized without specifying qhich side oif the bridge it is on.");
             }
             this.Side = p_side;
+            this.Queue.Add(this);
             this.Id = NextAnimalId++;
         }
 

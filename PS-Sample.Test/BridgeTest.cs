@@ -44,7 +44,10 @@ namespace PS_Sample.Test
                     animalToMove.TryMove();
                 }
             }
-            var ableToMove = 
+            var ableToMove = false;
+
+
+            Assert.IsFalse(ableToMove);
         }
     }
 }
