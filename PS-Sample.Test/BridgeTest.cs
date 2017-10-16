@@ -39,10 +39,10 @@ namespace PS_Sample.Test
                 var side = monkeyIndex % 2 == 1 ? BridgeSide.Left : BridgeSide.Right;
                 var animal = new Monkey(this.Bridge, side);
                 animalList.Add(animal);
-                foreach(var animalToMove in animalList)
-                {
-                    animalToMove.TryMove();
-                }
+            }
+            foreach (var animalToMove in animalList)
+            {
+                animalToMove.TryMove();
             }
             var ableToMove = false;
 

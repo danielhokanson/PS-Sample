@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace PS_Sample.Model
 {
@@ -41,26 +42,22 @@ namespace PS_Sample.Model
         {
             get
             {
-                if (Bridge == null || Lane == null || Array.IndexOf(Lane, this) < 0)
+                if (Bridge == null || Lane == null || Array.IndexOf(Lane, this) < 0 || Array.IndexOf(Lane, this) + 1 >= this.Bridge.PositionCount)
                 {
                     return null;
                 }
-                return Lane[Array.IndexOf(Lane, this) - 1];
+                return Lane[Array.IndexOf(Lane, this) + 1];
             }
         }
-        public short? BridgePosition
+        public int? BridgePosition
         {
             get
             {
-                if (Bridge == null || Bridge.CrossingAnimals == null)
+                if (Bridge == null || Bridge.CrossingAnimals == null || Lane == null || Array.IndexOf(this.Lane, this) < -1)
                 {
                     return null;
                 }
-                for (var laneIndex = 0; laneIndex < Bridge.LaneCount; laneIndex++)
-                {
-                    var lane = Bridge.CrossingAnimals[laneIndex];
-                }
-                return null;
+                return Array.IndexOf(this.Lane, this);
             }
         }
         internal List<Animal> Queue { get; private set; }
@@ -89,31 +86,75 @@ namespace PS_Sample.Model
 
         public bool TryMove()
         {
+            bool movementWasSuccess = false;
 
-            if (!LinePosition.HasValue)
+            using (TransactionScope movementScope = new TransactionScope())
             {
-                return MoveAnimalInBridgeLane();
+                if (!LinePosition.HasValue)
+                {
+                    movementWasSuccess = MoveAnimalInBridgeLane();
+                }
+                else if (LinePosition == 0)
+                {
+                    movementWasSuccess = MoveHeadofQueueAnimal();
+                }
+                else
+                {
+                    AnimalConsole.Insert(0, $"Animal({this.Id}):{this.GetType().Name}: has to wait. It is not at the front of the line.");
+                    movementWasSuccess = false;
+                }
+                movementScope.Complete();
             }
-            else if (LinePosition == 0)
-            {
-                return MoveHeadofQueueAnimal();
-            }
-            else
-            {
-                AnimalConsole.Insert(0, $"Animal({this.Id}):{this.GetType().Name}: has to wait. It is not at the front of the line.");
-                return false;
-            }
-            return false;
+            return movementWasSuccess;
         }
 
         private bool MoveAnimalInBridgeLane()
         {
-            if (Lane == null)
+            if (Lane == null || !BridgePosition.HasValue)
             {
                 var error = $"Animal({this.Id}):{this.GetType().Name}: Something went wrong. This Animal is not in a Queue and is not currently in a bridge lane. Cannot move";
                 AnimalConsole.Insert(0, error);
-                throw new InvalidOperationException(error);
+                return false;
             }
+
+            var currentPosition = Array.IndexOf(this.Lane, this);
+            var isFinishedCrossing = false;
+            if (BridgePredecessor == null)
+            {
+                if (Lane.Last() == this)
+                {
+                    switch (this.Side)
+                    {
+                        case BridgeSide.Left:
+                            this.Bridge.LeftCrossedAnimals.Add(this);
+                            break;
+                        case BridgeSide.Right:
+                            this.Bridge.RightCrossedAnimals.Add(this);
+                            break;
+                        default:
+                            var error = $"Animal({this.Id}):{this.GetType().Name}: Something went wrong. This Animal has already completed crossing the bridge. Cannot move.";
+                            AnimalConsole.Insert(0, error);
+                            return false;
+                    }
+
+                    this.Side = BridgeSide.Unspecified;
+                    this.Bridge.CrossingAnimalCount--;
+                    isFinishedCrossing = true;
+                }
+                else
+                {                    
+                    this.Lane[currentPosition + 1] = this;       
+                }
+                this.Lane[currentPosition] = null;
+                AnimalConsole.Insert(0, $"Animal({this.Id}):{this.GetType().Name}: Moved Successfully.");
+                if (isFinishedCrossing)
+                {
+                    AnimalConsole.Insert(0, $"Animal({this.Id}):{this.GetType().Name}: Finished Crossing.");
+                    this.Lane = null;
+                }
+                return true;
+            }
+            AnimalConsole.Insert(0, $"Animal({this.Id}):{this.GetType().Name}: has to wait. The bridge position in front of it is occupied.");
             return false;
         }
 
@@ -133,10 +174,22 @@ namespace PS_Sample.Model
                     foreach (Animal crossingAnimal in lane)
                     {
                         laneOccupants += (crossingAnimal != null) ? 1 : 0;
-                        if (currentOccupantSide == BridgeSide.Unspecified)
+                        if (crossingAnimal != null && currentOccupantSide == BridgeSide.Unspecified)
                         {
                             currentOccupantSide = crossingAnimal.Side;
                         }
+                    }
+                    if (laneOccupants == 0)
+                    {
+                        currentOccupantSide = this.Side;                        
+                    }
+                    if (currentOccupantSide == this.Side || lane[0] == null)
+                    {
+                        this.Lane = lane;
+                        this.Lane[0] = this;
+                        this.Queue.Remove(this);
+                        this.Bridge.CrossingAnimalCount++;
+                        return true;
                     }
                 }
             }

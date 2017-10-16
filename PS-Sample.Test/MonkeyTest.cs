@@ -32,9 +32,10 @@ namespace PS_Sample.Test
             animal.TryMove();
             animal.TryMove();
             animal.TryMove();
-            var shouldBeFalseValue = animal.TryMove();
+            animal.TryMove();
+            var couldMoveAfterCrossingComplete  = animal.TryMove();
 
-            Assert.IsTrue(!shouldBeFalseValue && animal.Side == BridgeSide.Unspecified);
+            Assert.IsTrue(!couldMoveAfterCrossingComplete && animal.Side == BridgeSide.Unspecified && this.Bridge.LeftCrossedAnimals.IndexOf(animal) > -1);
         }
     }
 }

@@ -10,8 +10,10 @@ namespace PS_Sample.Model
     {
         public List<Animal> LeftSideAnimalList { get; protected set; } = new List<Animal>();
         public List<Animal> RightSideAnimalList { get; protected set; } = new List<Animal>();
+        public List<Animal> LeftCrossedAnimals { get; internal set; } = new List<Animal>();
+        public List<Animal> RightCrossedAnimals { get; internal set; } = new List<Animal>();
         public Animal[][] CrossingAnimals { get; private set; }
-        public short CrossingAnimalCount { get; private set; }
+        public short CrossingAnimalCount { get; internal set; }
         public short PositionCount { get; private set; }
         public short Capacity { get; private set; }
         public short LaneCount { get; private set; }
