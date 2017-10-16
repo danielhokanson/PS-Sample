@@ -28,11 +28,11 @@ namespace PS_Sample.Test
             this.Bridge = new RopeBridge();
             var animal = new Monkey(this.Bridge, BridgeSide.Left);
 
-            animal.TryMove();
-            animal.TryMove();
-            animal.TryMove();
-            animal.TryMove();
-            animal.TryMove();
+            Assert.IsTrue(animal.TryMove());
+            Assert.IsTrue(animal.TryMove());
+            Assert.IsTrue(animal.TryMove());
+            Assert.IsTrue(animal.TryMove());
+            Assert.IsTrue(animal.TryMove());
             var couldMoveAfterCrossingComplete  = animal.TryMove();
 
             Assert.IsTrue(!couldMoveAfterCrossingComplete && animal.Side == BridgeSide.Unspecified && this.Bridge.LeftCrossedAnimals.IndexOf(animal) > -1);
