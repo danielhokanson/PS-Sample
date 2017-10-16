@@ -4,12 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
+using System.Windows.Forms;
 
 namespace PS_Sample.Model
 {
     public abstract class Animal
     {
         public static int NextAnimalId = 0;
+
+        public Control UserControl { get; set; }
+
         public static List<string> AnimalConsole { get; private set; } = new List<string>();
         public int Id { get; private set; }
         public string AvatarRelativePath { get; set; }
@@ -142,8 +146,8 @@ namespace PS_Sample.Model
                     isFinishedCrossing = true;
                 }
                 else
-                {                    
-                    this.Lane[currentPosition + 1] = this;       
+                {
+                    this.Lane[currentPosition + 1] = this;
                 }
                 this.Lane[currentPosition] = null;
                 this.Log($" Moved Successfully.");
@@ -168,39 +172,30 @@ namespace PS_Sample.Model
             else
             {
                 var otherQueue = this.Side == BridgeSide.Left ? this.Bridge.RightSideAnimalList : this.Bridge.LeftSideAnimalList;
-                if (Bridge.LastEntrantSide == this.Side && otherQueue.Any())
+                Animal[] useLane = this.Bridge.CrossingAnimals.FirstOrDefault(lane => (lane.All(animal => animal == null)
+                                                                                            || lane.Any(animal => animal != null
+                                                                                                        && animal.Side == this.Side))
+                                                                                        && lane[0] == null);
+                if (Bridge.LastEntrantSide == this.Side && otherQueue.Any() && useLane == null)
                 {
                     var sidename = this.Side == BridgeSide.Left ? "Left" : "Right";
                     this.Log($" has to wait. It's not the {sidename} side's turn yet.");
                     return false;
                 }
                 else
-                {  
-                    foreach (Animal[] lane in this.Bridge.CrossingAnimals)
+                {   
+                    if (useLane != null)
                     {
-                        int laneOccupants = 0;
-                        BridgeSide currentOccupantSide = BridgeSide.Unspecified;
-                        foreach (Animal crossingAnimal in lane)
-                        {
-                            laneOccupants += (crossingAnimal != null) ? 1 : 0;
-                            if (crossingAnimal != null && currentOccupantSide == BridgeSide.Unspecified)
-                            {
-                                currentOccupantSide = crossingAnimal.Side;
-                            }
-                        }
-                        if (laneOccupants == 0)
-                        {
-                            currentOccupantSide = this.Side;
-                        }
-                        if (currentOccupantSide == this.Side || lane[0] == null)
-                        {
-                            this.Lane = lane;
-                            this.Lane[0] = this;
-                            this.Queue.Remove(this);
-                            this.Bridge.CrossingAnimalCount++;
-                            this.Bridge.LastEntrantSide = currentOccupantSide;
-                            return true;
-                        }
+                        this.Lane = useLane;
+                        this.Lane[0] = this;
+                        this.Queue.Remove(this);
+                        this.Bridge.CrossingAnimalCount++;
+                        this.Bridge.LastEntrantSide = this.Side;
+                        return true;
+                    }
+                    else
+                    {
+                        this.Log(" Has to wait, no bridge Lane is open.");
                     }
                 }
             }

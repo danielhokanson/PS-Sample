@@ -12,7 +12,7 @@ namespace PS_Sample.Adapter
     {      
         public Monkey(Bridge p_bridge, BridgeSide p_side) : base(p_bridge, p_side)
         {
-            this.AvatarRelativePath = $"{new FileInfo(this.GetType().Assembly.Location).Directory}/resource/monkey.svg";
+            this.AvatarRelativePath = $"{new FileInfo(this.GetType().Assembly.Location).Directory}\\resource\\monkey.svg";
         }
     }
 }
