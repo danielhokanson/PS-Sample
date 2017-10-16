@@ -13,6 +13,7 @@ namespace PS_Sample.Model
         public List<Animal> LeftCrossedAnimals { get; internal set; } = new List<Animal>();
         public List<Animal> RightCrossedAnimals { get; internal set; } = new List<Animal>();
         public Animal[][] CrossingAnimals { get; private set; }
+        public BridgeSide LastEntrantSide { get; internal set; } = BridgeSide.Unspecified;
         public short CrossingAnimalCount { get; internal set; }
         public short PositionCount { get; private set; }
         public short Capacity { get; private set; }
@@ -40,6 +41,26 @@ namespace PS_Sample.Model
                 this.CrossingAnimals[laneIndex] = new Animal[this.PositionCount];
             }
         }
-
+        public bool ProcessAnimalMovement()
+        {
+            bool didAnyoneMove = false;
+            foreach(Animal[] lane in this.CrossingAnimals.Where(lane=>lane.Any(animal=>animal != null)))
+            {
+                var animalsInLane = lane.Where(animal => animal != null);
+                foreach(Animal animal in animalsInLane.OrderBy(animal=>animal.Id))
+                {
+                    didAnyoneMove = animal.TryMove() ? true : didAnyoneMove;
+                }
+            }
+            if (LeftSideAnimalList.Any())
+            {
+                didAnyoneMove = LeftSideAnimalList.First().TryMove() ? true : didAnyoneMove;
+            }
+            if (RightSideAnimalList.Any())
+            {
+                didAnyoneMove = RightSideAnimalList.First().TryMove() ? true : didAnyoneMove;
+            }
+            return didAnyoneMove;
+        }
     }
 }

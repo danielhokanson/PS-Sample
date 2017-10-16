@@ -53,7 +53,7 @@ namespace PS_Sample.Model
         {
             get
             {
-                if (Bridge == null || Bridge.CrossingAnimals == null || Lane == null || Array.IndexOf(this.Lane, this) < -1)
+                if (Bridge == null || Bridge.CrossingAnimals == null || Lane == null || Array.IndexOf(this.Lane, this) < 0)
                 {
                     return null;
                 }
@@ -84,7 +84,7 @@ namespace PS_Sample.Model
             this.Id = NextAnimalId++;
         }
 
-        public bool TryMove()
+        internal bool TryMove()
         {
             bool movementWasSuccess = false;
 
@@ -100,7 +100,7 @@ namespace PS_Sample.Model
                 }
                 else
                 {
-                    AnimalConsole.Insert(0, $"Animal({this.Id}):{this.GetType().Name}: has to wait. It is not at the front of the line.");
+                    this.Log($" has to wait. It is not at the front of the line.");
                     movementWasSuccess = false;
                 }
                 movementScope.Complete();
@@ -112,12 +112,12 @@ namespace PS_Sample.Model
         {
             if (Lane == null || !BridgePosition.HasValue)
             {
-                var error = $"Animal({this.Id}):{this.GetType().Name}: Something went wrong. This Animal is not in a Queue and is not currently in a bridge lane. Cannot move";
-                AnimalConsole.Insert(0, error);
+                var error = $"Something went wrong. This Animal is not in a Queue and is not currently in a bridge lane. Cannot move";
+                this.Log(error);
                 return false;
             }
 
-            var currentPosition = Array.IndexOf(this.Lane, this);
+            var currentPosition = BridgePosition.Value;
             var isFinishedCrossing = false;
             if (BridgePredecessor == null)
             {
@@ -132,8 +132,8 @@ namespace PS_Sample.Model
                             this.Bridge.RightCrossedAnimals.Add(this);
                             break;
                         default:
-                            var error = $"Animal({this.Id}):{this.GetType().Name}: Something went wrong. This Animal has already completed crossing the bridge. Cannot move.";
-                            AnimalConsole.Insert(0, error);
+                            var error = $"Something went wrong. This Animal has already completed crossing the bridge. Cannot move.";
+                            this.Log(error);
                             return false;
                     }
 
@@ -146,15 +146,15 @@ namespace PS_Sample.Model
                     this.Lane[currentPosition + 1] = this;       
                 }
                 this.Lane[currentPosition] = null;
-                AnimalConsole.Insert(0, $"Animal({this.Id}):{this.GetType().Name}: Moved Successfully.");
+                this.Log($" Moved Successfully.");
                 if (isFinishedCrossing)
                 {
-                    AnimalConsole.Insert(0, $"Animal({this.Id}):{this.GetType().Name}: Finished Crossing.");
+                    this.Log($" Finished Crossing.");
                     this.Lane = null;
                 }
                 return true;
             }
-            AnimalConsole.Insert(0, $"Animal({this.Id}):{this.GetType().Name}: has to wait. The bridge position in front of it is occupied.");
+            this.Log($" has to wait. The bridge position in front of it is occupied.");
             return false;
         }
 
@@ -162,38 +162,56 @@ namespace PS_Sample.Model
         {
             if (Bridge.CrossingAnimalCount == Bridge.Capacity)
             {
-                AnimalConsole.Insert(0, $"Animal({this.Id}):{this.GetType().Name}: has to wait. The bridge is at capacity.");
+                this.Log($" has to wait. The bridge is at capacity.");
                 return false;
             }
             else
             {
-                foreach (Animal[] lane in this.Bridge.CrossingAnimals)
+                var otherQueue = this.Side == BridgeSide.Left ? this.Bridge.RightSideAnimalList : this.Bridge.LeftSideAnimalList;
+                if (Bridge.LastEntrantSide == this.Side && otherQueue.Any())
                 {
-                    int laneOccupants = 0;
-                    BridgeSide currentOccupantSide = BridgeSide.Unspecified;
-                    foreach (Animal crossingAnimal in lane)
+                    var sidename = this.Side == BridgeSide.Left ? "Left" : "Right";
+                    this.Log($" has to wait. It's not the {sidename} side's turn yet.");
+                    return false;
+                }
+                else
+                {  
+                    foreach (Animal[] lane in this.Bridge.CrossingAnimals)
                     {
-                        laneOccupants += (crossingAnimal != null) ? 1 : 0;
-                        if (crossingAnimal != null && currentOccupantSide == BridgeSide.Unspecified)
+                        int laneOccupants = 0;
+                        BridgeSide currentOccupantSide = BridgeSide.Unspecified;
+                        foreach (Animal crossingAnimal in lane)
                         {
-                            currentOccupantSide = crossingAnimal.Side;
+                            laneOccupants += (crossingAnimal != null) ? 1 : 0;
+                            if (crossingAnimal != null && currentOccupantSide == BridgeSide.Unspecified)
+                            {
+                                currentOccupantSide = crossingAnimal.Side;
+                            }
                         }
-                    }
-                    if (laneOccupants == 0)
-                    {
-                        currentOccupantSide = this.Side;                        
-                    }
-                    if (currentOccupantSide == this.Side || lane[0] == null)
-                    {
-                        this.Lane = lane;
-                        this.Lane[0] = this;
-                        this.Queue.Remove(this);
-                        this.Bridge.CrossingAnimalCount++;
-                        return true;
+                        if (laneOccupants == 0)
+                        {
+                            currentOccupantSide = this.Side;
+                        }
+                        if (currentOccupantSide == this.Side || lane[0] == null)
+                        {
+                            this.Lane = lane;
+                            this.Lane[0] = this;
+                            this.Queue.Remove(this);
+                            this.Bridge.CrossingAnimalCount++;
+                            this.Bridge.LastEntrantSide = currentOccupantSide;
+                            return true;
+                        }
                     }
                 }
             }
             return false;
+        }
+
+        private void Log(string p_message)
+        {
+            p_message = $"Animal({this.Id}):{this.GetType().Name}: {p_message}";
+            AnimalConsole.Insert(0, p_message);
+            Console.WriteLine(p_message);
         }
     }
 }
